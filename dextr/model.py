@@ -283,8 +283,7 @@ def training_loop(model, train_ds_fn, val_ds_fn, val_truth_ds_fn, extreme_range,
 
     if verbose:
         # Report dataset size
-        print('Dataset:')
-        print('len(train_ds)={}'.format(len(train_ds)))
+        print(f'\nDataset size = {len(train_ds)}')
         if val_ds is not None:
             print('len(val_ds)={}'.format(len(val_ds)))
 
@@ -340,7 +339,7 @@ def training_loop(model, train_ds_fn, val_ds_fn, val_truth_ds_fn, extreme_range,
 
 
     if verbose:
-        print('Training...')
+        print('Training begins... \n')
     iter_i = 0
     validated = False
     for epoch in range(num_epochs):

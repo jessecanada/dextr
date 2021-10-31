@@ -102,7 +102,9 @@ def train_dextr(job_name, dataset, train_image_path, train_target_path, val_imag
     from dextr.data_pipeline import dextr_dataset, pascal_voc_dataset
     from dextr.architectures import deeplab, denseunet, resunet
     import job_output
+    import timeit
 
+    start = timeit.default_timer()
     output = job_output.JobOutput(job_name, False)
     output.connect_streams()
 
@@ -279,7 +281,8 @@ def train_dextr(job_name, dataset, train_image_path, train_target_path, val_imag
                         lr_sched, lr_poly_power, opt_type, sgd_weight_decay, aug_hflip, aug_rot_range,
                         batch_size, iters_per_epoch, num_epochs, val_every_n_epochs,
                         torch_device, num_workers, True, on_epoch_finished)
-
+    end = timeit.default_timer()
+    print(f'Total training time: {(end-start):.2f} seconds')
 
 if __name__ == '__main__':
     train_dextr()

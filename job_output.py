@@ -24,6 +24,7 @@
 # Dr. M. Mackiewicz.
 
 import os, sys
+from datetime import datetime
 import pathlib
 import torch
 
@@ -47,6 +48,8 @@ class _LogHelper(object):
 
 class JobOutput(object):
     def __init__(self, job_name, continue_job):
+        # JC edit 10-30-2021
+        job_time = datetime.today().strftime("%Y-%m-%d-%H%M%S")
         log_dir = pathlib.Path('logs')
         checkpoints_dir = 'checkpoints'
 
@@ -56,7 +59,7 @@ class JobOutput(object):
         if not os.path.exists(checkpoints_dir):
             os.makedirs(checkpoints_dir, exist_ok=True)
 
-        self.log_path = log_dir / 'log_{}.txt'.format(job_name)
+        self.log_path = log_dir / 'log_{}.txt'.format(job_name+"_"+job_time)
         self.checkpoint_path = os.path.join(checkpoints_dir, '{}.pth'.format(job_name))
 
         if not continue_job and self.log_path.exists():
@@ -88,8 +91,13 @@ class JobOutput(object):
         with open(new_path, 'wb') as f_ckpt:
             torch.save(data, f_ckpt)
         # Remove the old one if it exists
+        # JC edit 10-30-2021
         if os.path.exists(self.checkpoint_path):
-            os.remove(self.checkpoint_path)
+            try: 
+                os.remove(self.checkpoint_path)
+            except OSError:
+                print('Cannot delete file; file may be in use or user does not have permission')
+                print('Old checkpoint file is not removed')
         # Rename
         os.rename(new_path, self.checkpoint_path)
 
