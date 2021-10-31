@@ -100,9 +100,9 @@ model trained on Pascal VOC above and fine-tune it, rather than starting from an
 
 You can specify that the label index 255 should be ignore by adding `--label_ignore_index=255`.
 
-Rename 'my_model_from_labels' to whatever you want to call your dextr model.
+Rename `my_model_from_labels` to whatever you want to call your dextr model.
 
-Adjust batch_size to suit your GPU VRAM and image size.
+Adjust `batch_size` to suit your GPU VRAM and image size.
 
 You could train using the entire (train and validation) Pascal VOC data set using:
 
