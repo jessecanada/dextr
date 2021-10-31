@@ -22,19 +22,20 @@
 #
 # Developed by Geoffrey French in collaboration with Dr. M. Fisher and
 # Dr. M. Mackiewicz.
+# Commits by Dr. J.T. Chao
 import click
 
 @click.command()
 @click.argument('job_name', type=str)
 @click.option('--dataset', type=click.Choice(['pascal_voc', 'custom_label', 'custom_mask']),
               default='pascal_voc', help='Dataset to use')
-@click.option('--train_image_pat', type=str, default='',
+@click.option('--train_image_path', type=str, default='',
               help='Training images path pattern, e.g. mydataset/train/images/*.jpg')
-@click.option('--train_target_pat', type=str, default='',
+@click.option('--train_target_path', type=str, default='',
               help='Training targets path pattern, e.g. mydataset/train/labels/*.png')
-@click.option('--val_image_pat', type=str, default='',
+@click.option('--val_image_path', type=str, default='',
               help='Training images path pattern, e.g. mydataset/val/images/*.jpg')
-@click.option('--val_target_pat', type=str, default='',
+@click.option('--val_target_path', type=str, default='',
               help='Training targets path pattern, e.g. mydataset/val/labels/*.png')
 @click.option('--label_ignore_index', type=int,
               help='Label index to ignore when using custom_label dataset (e.g. 255 is used for Pascal VOC)')
@@ -86,7 +87,7 @@ import click
               help='Torch device for training')
 @click.option('--num_workers', type=int, default=8,
               help='Number of background processes for data loading')
-def train_dextr(job_name, dataset, train_image_pat, train_target_pat, val_image_pat, val_target_pat, label_ignore_index,
+def train_dextr(job_name, dataset, train_image_path, train_target_path, val_image_path, val_target_path, label_ignore_index,
                 arch, learning_rate, load_model, pretrained_lr_factor, lr_sched, lr_poly_power,
                 opt_type, sgd_weight_decay,
                 target_size, padding, extreme_range, noise_std, blob_sigma, aug_hflip, aug_rot_range,
@@ -192,22 +193,22 @@ def train_dextr(job_name, dataset, train_image_pat, train_target_pat, val_image_
         val_truth_ds_fn = lambda: pascal_voc_dataset.PascalVOCDataset(
             'val', None, load_input=False, progress_fn=tqdm.tqdm)
     elif dataset == 'custom_label':
-        if train_image_pat == '':
+        if train_image_path == '':
             print('Training image pattern MUST be provided when using custom_label data set')
-        if train_target_pat == '':
+        if train_target_path == '':
             print('Training target pattern MUST be provided when using custom_label data set')
 
         train_x, train_y = match_image_paths_with_label_paths(
-            [pathlib.Path(p) for p in glob.glob(train_image_pat)],
-            [pathlib.Path(p) for p in glob.glob(train_target_pat)])
+            [pathlib.Path(p) for p in glob.glob(train_image_path)],
+            [pathlib.Path(p) for p in glob.glob(train_target_path)])
 
         train_ds_fn = lambda transform=None: dextr_dataset.LabelImageTargetDextrDataset(
             train_x, train_y, transform=transform, ignore_index=label_ignore_index, progress_fn=tqdm.tqdm)
 
-        if val_image_pat != '' and val_target_pat != '':
+        if val_image_path != '' and val_target_path != '':
             val_x, val_y = match_image_paths_with_label_paths(
-                [pathlib.Path(p) for p in glob.glob(val_image_pat)],
-                [pathlib.Path(p) for p in glob.glob(val_target_pat)])
+                [pathlib.Path(p) for p in glob.glob(val_image_path)],
+                [pathlib.Path(p) for p in glob.glob(val_target_path)])
 
             val_ds_fn = lambda transform=None: dextr_dataset.LabelImageTargetDextrDataset(
                 val_x, val_y, transform=transform, ignore_index=label_ignore_index, progress_fn=tqdm.tqdm)
@@ -219,22 +220,22 @@ def train_dextr(job_name, dataset, train_image_pat, train_target_pat, val_image_
             val_truth_ds_fn = None
 
     elif dataset == 'custom_mask':
-        if train_image_pat == '':
+        if train_image_path == '':
             print('Training image pattern MUST be provided when using custom_mask data set')
-        if train_target_pat == '':
+        if train_target_path == '':
             print('Training target pattern MUST be provided when using custom_mask data set')
 
         train_x, train_y = match_image_paths_with_mask_stack_paths(
-            [pathlib.Path(p) for p in glob.glob(train_image_pat)],
-            [pathlib.Path(p) for p in glob.glob(train_target_pat)])
+            [pathlib.Path(p) for p in glob.glob(train_image_path)],
+            [pathlib.Path(p) for p in glob.glob(train_target_path)])
 
         train_ds_fn = lambda transform=None: dextr_dataset.MaskStackTargetDextrDataset(
             train_x, train_y, transform=transform, progress_fn=tqdm.tqdm)
 
-        if val_image_pat != '' and val_target_pat != '':
+        if val_image_path != '' and val_target_path != '':
             val_x, val_y = match_image_paths_with_mask_stack_paths(
-                [pathlib.Path(p) for p in glob.glob(val_image_pat)],
-                [pathlib.Path(p) for p in glob.glob(val_target_pat)])
+                [pathlib.Path(p) for p in glob.glob(val_image_path)],
+                [pathlib.Path(p) for p in glob.glob(val_target_path)])
 
             val_ds_fn = lambda transform=None: dextr_dataset.MaskStackTargetDextrDataset(
                 val_x, val_y, transform=transform, progress_fn=tqdm.tqdm)
