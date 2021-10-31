@@ -89,16 +89,20 @@ In these examples, we assume that you have downloaded the pre-trained DEXTR mode
 ##### Training using a label image data set
 
 `> python train_dextr.py my_model_from_labels --dataset=custom_label
---train_image_pat=/mydataset/train/input/*.jpg --train_target_pat=/mydataset/train/labels/*.png
---arch=resunet101 --load_model=dextr_pascalvoc_resunet101-a2d81727.pth`
+--train_image_path=/mydataset/train/input/*.jpg --train_target_path=/mydataset/train/labels/*.png
+--arch=resunet101 --batch_size=4 --load_model=dextr_pascalvoc_resunet101-a2d81727.pth`
 
-The input and label images are given to the `--train_image_pat` and `--train_target_pat` options.
-You can specify validation images using the `--val_image_pat` and `--val_target_pat` options in a similar way.
+The input and label images are given to the `--train_image_path` and `--train_target_path` options.
+You can specify validation images using the `--val_image_path` and `--val_target_path` options in a similar way.
 
 `--load_model=dextr_pascalvoc_resunet101-a2d81727.pth` indicates that we should start by loading the
 model trained on Pascal VOC above and fine-tune it, rather than starting from an ImageNet classifier.
 
 You can specify that the label index 255 should be ignore by adding `--label_ignore_index=255`.
+
+Rename `my_model_from_labels` to whatever you want to call your dextr model.
+
+Other params: `batch_size` `iters_per_epoch` `num_workers`
 
 You could train using the entire (train and validation) Pascal VOC data set using:
 
