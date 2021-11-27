@@ -1,1 +1,5 @@
+# trained weights
 checkpoints/
+
+# Byte-compiled / optimized
+__pycache__/
